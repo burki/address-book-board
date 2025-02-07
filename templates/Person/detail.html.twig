@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+<h1>{{ person.name }}</h1>
+{% for year, info in person.infoByYear %}
+    <h2>{{ year }}</h2>
+    <div>
+        {% if info.description is defined %}
+            <i>{{ info.description }}</i>{% if info.address is defined %}, {% endif %}
+        {% endif %}
+        {% if info.address is defined %}
+            {{ info.address }}
+        {% endif %}
+    </div>
+{% endfor %}
+
+{# display navigation #}
+{% endblock %}

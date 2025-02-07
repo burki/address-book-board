@@ -26,6 +26,9 @@
             "./migrations/.gitignore"
         ]
     },
+    "knplabs/knp-paginator-bundle": {
+        "version": "v6.6.1"
+    },
     "phpstan/phpstan": {
         "version": "2.1",
         "recipe": {
@@ -51,6 +54,9 @@
             "./phpunit.xml.dist",
             "./tests/bootstrap.php"
         ]
+    },
+    "spiriitlabs/form-filter-bundle": {
+        "version": "v10.0.2"
     },
     "symfony/asset-mapper": {
         "version": "6.4",

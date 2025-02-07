@@ -88,4 +88,13 @@ class Person
 
         return $this;
     }
+
+    public function getInfoByYear($year = null): array|null
+    {
+        if (is_null($year)) {
+            return $this->infoByYear;
+        }
+
+        return $this->infoByYear[$year] ?? null;
+    }
 }

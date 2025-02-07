@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+<h1>Personen</h1>
+<form method="get" action="{{ path(app.request.attributes.get('_route')) }}">
+    <div class="form-group">
+        {{ form_rest(form) }}
+        {#<button type="submit" class="btn btn-primary">{{ 'Search'|trans }}</button>#}
+    </div>
+</form>
+{% for person in pagination %}
+    <div>
+        <a href="{{ path('person_show', { 'id': person.id }) }}">{{ person.fullName }}</a>
+    </div>
+{% endfor %}
+
+{# display navigation #}
+<div class="navigation">
+    {{ knp_pagination_render(pagination) }}
+</div>
+{% endblock %}
