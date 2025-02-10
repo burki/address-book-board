@@ -117,4 +117,9 @@ class Company
 
         return $this;
     }
+
+    public function getPersonRelations(): iterable
+    {
+        return $this->personRelations;
+    }
 }

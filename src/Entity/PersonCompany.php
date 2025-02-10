@@ -65,12 +65,22 @@ class PersonCompany
         return $this;
     }
 
+    public function getPerson(): Person
+    {
+        return $this->person;
+    }
+
     public function setCompany(Company $company): self
     {
         $this->company = $company;
         $company->addPersonRelation($this);
 
         return $this;
+    }
+
+    public function getCompany(): Company
+    {
+        return $this->company;
     }
 
     public function setYear(int $year): self

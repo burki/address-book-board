@@ -3,7 +3,7 @@
 {% block body %}
 
 <h1>{{ company.name }}</h1>
-{% for year, info in company.infoByYear %}
+{% for year, info in { 1927: {} } %}
     <h2>{{ year }}</h2>
     <div>
         {% if info.description is defined %}
@@ -11,6 +11,17 @@
         {% endif %}
         {% if info.address is defined %}
             {{ info.address }}
+        {% endif %}
+        {% if company.personRelations|length > 0 %}
+        <h3>Personen</h3>
+        <ul>
+            {% for personRelation in company.personRelations %}
+                <li>
+                    <a href="{{ path('person_show', { 'id': personRelation.person.id }) }}">{{ personRelation.person.fullname }}</a>
+                    ({{ personRelation.relationship }})
+                </li>
+            {% endfor %}
+        </ul>
         {% endif %}
     </div>
 {% endfor %}

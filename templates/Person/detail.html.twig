@@ -12,6 +12,17 @@
         {% if info.address is defined %}
             {{ info.address }}
         {% endif %}
+        {% if person.companyRelations|length > 0 %}
+        <h3>Firmen</h3>
+        <ul>
+            {% for companyRelation in person.companyRelations %}
+                <li>
+                    <a href="{{ path('company_show', { 'id': companyRelation.company.id }) }}">{{ companyRelation.company.name }}</a>
+                    ({{ companyRelation.relationship }})
+                </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
     </div>
 {% endfor %}
 
