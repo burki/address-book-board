@@ -1,5 +1,5 @@
 <?php
-// src/Command/ImportPersonCommand.php
+// src/Command/ImportCompanyCommand.php
 
 namespace App\Command;
 
@@ -68,7 +68,7 @@ class ImportCompanyCommand extends Command
                 return;
             }
 
-            $name_full = rtrim($row['name'], " ,");
+            $name_full = rtrim($row['name']);
 
             $company = $companyRepository->findOneBy([ 'nameFull' => $name_full]);
 
@@ -89,8 +89,6 @@ class ImportCompanyCommand extends Command
                 $this->entityManager->flush();
                 $this->entityManager->clear();
                 $this->countPersists = 0;
-
-                gc_collect_cycles();
             }
         });
 
