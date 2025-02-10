@@ -1,4 +1,9 @@
 import './bootstrap.js';
+
+// see https://symfony.com/doc/current/frontend/asset_mapper.html#handling-3rd-party-css
+// php bin/console importmap:require bootstrap
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 /*
  * Welcome to your app's main JavaScript file!
  *
@@ -7,4 +12,4 @@ import './bootstrap.js';
  */
 import './styles/app.css';
 
-console.log('This log comes from assets/app.js - welcome to AssetMapper! 🎉');
+// console.log('This log comes from assets/app.js - welcome to AssetMapper! 🎉');

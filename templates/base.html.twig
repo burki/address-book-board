@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
+        <title>{% block title %}Adreßbuch der Direktoren und Aufsichtsräte{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
         {% block stylesheets %}
         {% endblock %}
@@ -12,6 +12,23 @@
         {% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
+        <header class="p-3 text-bg-dark">
+            <div class="container-fluid">
+                <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                    <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                        <li><a href="{{ path('home') }}" class="nav-link px-2 text-secondary">Adreßbuch der Direktoren und Aufsichtsräte</a></li>
+                        <li><a href="{{ path('person_list') }}" class="nav-link px-2 text-white">Personen</a></li>
+                        <li><a href="{{ path('company_list') }}" class="nav-link px-2 text-white">Firmen</a></li>
+                    </ul>
+
+                    <div class="text-end">
+                        <a href="{{ path('about') }}" class="nav-link px-2 text-white">Über</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div class="p-4 container-fluid">
+            {% block body %}{% endblock %}
+        </div>
     </body>
 </html>
