@@ -1,6 +1,9 @@
 #!/usr/bin/env php
 <?php
 
+// dbu
+ini_set("memory_limit",-1);
+
 use App\Kernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 
