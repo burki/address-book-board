@@ -18,7 +18,7 @@
             {% for companyRelation in person.companyRelations %}
                 <li>
                     <a href="{{ path('company_show', { 'id': companyRelation.company.id }) }}">{{ companyRelation.company.name }}</a>
-                    ({{ companyRelation.relationship }})
+                    ({{ companyRelation.relationship }}, {{ companyRelation.company.personRelations|length }})
                 </li>
             {% endfor %}
         </ul>

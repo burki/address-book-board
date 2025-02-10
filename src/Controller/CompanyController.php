@@ -33,8 +33,11 @@ class CompanyController extends AbstractController
         // initialize a query builder
         $filterBuilder = $em
             ->getRepository(Company::class)
-            ->createQueryBuilder('p')
-            ->orderBy('p.name', 'ASC')
+            ->createQueryBuilder('c')
+            ->select('c, COUNT(pc) AS numPersons')
+            ->leftJoin('c.personRelations', 'pc')
+            ->groupBy('c.id')
+            ->orderBy('c.name', 'ASC')
             ;
 
         $form = $formFactory->create(CompanyFilterType::class);

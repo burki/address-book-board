@@ -9,9 +9,11 @@
         {#<button type="submit" class="btn btn-primary">{{ 'Search'|trans }}</button>#}
     </div>
 </form>
-{% for company in pagination %}
+{% for row in pagination %}
+    {% set company = row[0] %}
     <div>
         <a href="{{ path('company_show', { 'id': company.id }) }}">{{ company.fullName }}</a>
+        ({{ row['numPersons'] }})
     </div>
 {% endfor %}
 
