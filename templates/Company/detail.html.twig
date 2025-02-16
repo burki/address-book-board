@@ -13,15 +13,20 @@
             {{ info.address }}
         {% endif %}
         {% if company.personRelations|length > 0 %}
-        <h3>Personen</h3>
-        <ul>
-            {% for personRelation in company.personRelations %}
-                <li>
-                    <a href="{{ path('person_show', { 'id': personRelation.person.id }) }}">{{ personRelation.person.fullname }}</a>
-                    ({{ personRelation.relationship }}, {{ personRelation.person.companyRelations|length }})
-                </li>
+            {% for isBoard,label in { 1: 'Aufsichtsrat', 0: 'Vorstand',  } %}
+                {% set personRelations = company.personRelations(isBoard == true) %}
+                {% if personRelations|length > 0 %}
+                <h3>{{ label }}</h3>
+                <ul>
+                    {% for personRelation in personRelations %}
+                        <li>
+                            <a href="{{ path('person_show', { 'id': personRelation.person.id }) }}">{{ personRelation.person.fullname }}</a>
+                            ({{ personRelation.relationship }}, {{ personRelation.person.companyRelations|length }})
+                        </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
             {% endfor %}
-        </ul>
         {% endif %}
     </div>
 {% endfor %}

@@ -9,6 +9,11 @@
         {#<button type="submit" class="btn btn-primary">{{ 'Search'|trans }}</button>#}
     </div>
 </form>
+<div class="d-flex flex-row mb-3">
+    <div>Sortieren</div>
+    <div class="ms-2"{% if pagination.isSorted('name') %} style="font-weight: bold"{% endif %}>{{ knp_pagination_sortable(pagination, 'Name', 'name', {}, {'direction': 'asc'}) }}</div>
+    <div class="ms-2"{% if pagination.isSorted('numPersons') %} style="font-weight: bold"{% endif %}>{{ knp_pagination_sortable(pagination, 'Anzahl Personen', 'numPersons', {}, {'direction': 'desc'}) }}</div>
+</div>
 {% for row in pagination %}
     {% set company = row[0] %}
     <div>

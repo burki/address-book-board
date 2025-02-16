@@ -113,4 +113,9 @@ class PersonCompany
 
         return $this;
     }
+
+    public function getIsBoard(): bool
+    {
+        return $this->isBoard;
+    }
 }

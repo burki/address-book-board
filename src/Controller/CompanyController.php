@@ -34,10 +34,9 @@ class CompanyController extends AbstractController
         $filterBuilder = $em
             ->getRepository(Company::class)
             ->createQueryBuilder('c')
-            ->select('c, COUNT(pc) AS numPersons')
+            ->select('c, c.name AS name, COUNT(pc) AS numPersons')
             ->leftJoin('c.personRelations', 'pc')
             ->groupBy('c.id')
-            ->orderBy('c.name', 'ASC')
             ;
 
         $form = $formFactory->create(CompanyFilterType::class);
@@ -53,7 +52,11 @@ class CompanyController extends AbstractController
         $pagination = $paginator->paginate(
             $filterBuilder->getQuery(),
             $request->query->get('page', 1),
-            self::PAGE_LIMIT
+            self::PAGE_LIMIT,
+            [
+                'defaultSortFieldName' => 'name',
+                'defaultSortDirection' => 'asc',
+            ]
         );
 
         return $this->render('Company/list.html.twig', [

@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-
+use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
@@ -118,8 +118,14 @@ class Company
         return $this;
     }
 
-    public function getPersonRelations(): iterable
+    public function getPersonRelations(?bool $isBoard = null): iterable
     {
-        return $this->personRelations;
+        if (is_null($isBoard)) {
+            return $this->personRelations;
+        }
+
+        return $this->personRelations->filter(function (PersonCompany $personCompany) use ($isBoard) {
+            return $personCompany->getIsBoard() === $isBoard;
+        });
     }
 }
