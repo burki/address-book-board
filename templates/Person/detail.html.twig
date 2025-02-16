@@ -4,7 +4,7 @@
 
 <h1>{{ person.name }}</h1>
 {% for year, info in person.infoByYear %}
-    <h2>{{ year }}</h2>
+    {#<h2>{{ year }}</h2>#}
     <div>
         {% if info.description is defined %}
             <i>{{ info.description }}</i>{% if info.address is defined %}, {% endif %}
