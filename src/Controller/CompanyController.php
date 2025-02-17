@@ -65,13 +65,88 @@ class CompanyController extends AbstractController
         ]);
     }
 
+    protected function findSimilar(EntityManagerInterface $em, Company $entity)
+    {
+        $dbconn = $em->getConnection();
+
+        // build all the ids
+        $person_ids = [];
+        foreach ($entity->getPersonRelations() as $personCompany) {
+            $person_ids[] = $personCompany->getPerson()->getId();
+        }
+
+        if (0 == count($person_ids)) {
+            return $person_ids;
+        }
+
+        $querystr = "SELECT person_id, company_id"
+            . " FROM person_company"
+            . " WHERE person_id IN (" . join(', ', $person_ids) . ')'
+            . " AND company_id <> " . $entity->getId()
+            . " ORDER BY company_id";
+        $num_persons = count($person_ids);
+
+        $persons_by_company = [];
+        $stmt = $dbconn->executeQuery($querystr);
+        while ($row = $stmt->fetchAssociative()) {
+            if (!array_key_exists($row['company_id'], $persons_by_company)) {
+                $persons_by_company[$row['company_id']] = [];
+            }
+
+            $persons_by_company[$row['company_id']][] = $row['person_id'];
+        }
+
+        $jaccard_index = [];
+        $company_ids = array_keys($persons_by_company);
+        if (count($company_ids) > 0) {
+            $querystr = "SELECT name, company_id, COUNT(DISTINCT person_id) AS num_persons"
+                . " FROM person_company"
+                . " LEFT OUTER JOIN company ON person_company.company_id=company.id"
+                . " WHERE company_id IN (" . join(', ', $company_ids) . ')'
+                . " GROUP BY company_id";
+            $stmt = $dbconn->executeQuery($querystr);
+            while ($row = $stmt->fetchAssociative()) {
+                $num_shared = count($persons_by_company[$row['company_id']]);
+                $jaccard_index[$row['company_id']] = [
+                    'name' => $row['name'],
+                    'count' => $num_shared,
+                    'coefficient' =>
+                    1.0
+                        * $num_shared // shared
+                        /
+                        ($row['num_persons'] + $num_persons - $num_shared)
+                ];
+            }
+
+            uasort(
+                $jaccard_index,
+                function ($a, $b) {
+                    if ($a['coefficient'] == $b['coefficient']) {
+                        return 0;
+                    }
+                    // highest first
+                    return $a['coefficient'] < $b['coefficient'] ? 1 : -1;
+                }
+            );
+        }
+
+        return $jaccard_index;
+    }
+
     #[Route('/company/{id}', name: 'company_show')]
     public function detailAction(
         int $id,
         EntityManagerInterface $em
-    ): Response {
+    ): Response
+    {
+        $entity =  $em->getRepository(Company::class)->find($id);
+        if (is_null($entity)) {
+            throw $this->createNotFoundException('Company not found');
+        }
+
         return $this->render('Company/detail.html.twig', [
-            'company' => $em->getRepository(Company::class)->find($id)
+            'company' => $entity,
+            'similar' => $this->findSimilar($em, $entity),
         ]);
     }
 }

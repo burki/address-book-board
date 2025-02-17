@@ -28,8 +28,18 @@
                 {% endif %}
             {% endfor %}
         {% endif %}
+        {% if similar|length > 0 %}
+        <h3>Personell verbundene Firmen</h3>
+        <ul>
+            {% for id,related in similar %}
+                <li>
+                    <a href="{{ path('company_show', { 'id': id }) }}">{{ related.name }}</a>
+                    ({{ related.count }}, {{ (100 * related.coefficient)|round(1) }}%)
+                </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
     </div>
 {% endfor %}
 
-{# display navigation #}
 {% endblock %}
