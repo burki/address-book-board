@@ -1,7 +1,6 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-
 <h1>{{ person.name }}</h1>
 {% for year, info in person.infoByYear %}
     {#<h2>{{ year }}</h2>#}
@@ -23,16 +22,43 @@
             {% endfor %}
         </ul>
         {% endif %}
+
         {% if similar|length > 0 %}
         <h3>Verbundene Personen</h3>
         <ul>
             {% for id,related in similar %}
                 <li>
                     <a href="{{ path('person_show', { 'id': id }) }}">{{ related.name }}</a>
-                    ({{ related.count }}, {{ (100 * related.coefficient)|round(1) }}%)
+                    (<a href="{{ path('company_shared', { 'persons': [ person.id, id ]|join(',') }) }}" data-remote="false" data-bs-toggle="modal" data-bs-target="#detailModal">{{ related.count }}, {{ (100 * related.coefficient)|round(1) }}%</a>)
                 </li>
             {% endfor %}
         </ul>
+
+        <!-- Modal for shared Company -->
+        <div id="detailModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Loading....</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+        document.addEventListener("DOMContentLoaded", function(event) {
+            // Your code to run since DOM is loaded and ready
+            $('#detailModal').on('show.bs.modal', function(e) {
+                var link = $(e.relatedTarget);
+                $(this).find('.modal-body').html('Loading...');
+                $(this).find('.modal-body').load(link.attr('href'));
+            });
+        });
+        </script>
+
         {% endif %}
     </div>
 {% endfor %}

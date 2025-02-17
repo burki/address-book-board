@@ -15,6 +15,7 @@ use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 
+use App\Entity\Company;
 use App\Filter\PersonFilterType;
 use App\Entity\Person;
 
@@ -146,6 +147,74 @@ class PersonController extends AbstractController
         return $this->render('Person/detail.html.twig', [
             'person' => $entity,
             'similar' => $this->findSimilar($em, $entity),
+        ]);
+    }
+
+    #[Route('/person/shared/{companies}', name: 'person_shared')]
+    public function sharedAction(Request $request,
+                                 EntityManagerInterface $em,
+                                 PaginatorInterface $paginator,
+                                 $companies = null)
+    {
+        if (!is_null($companies)) {
+            $companies = explode(',', $companies);
+        }
+
+        if (is_null($companies) || count($companies) < 2) {
+            throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("Invalid argument");
+        }
+
+        $entities = [];
+        $names = [];
+        $companyRepo = $em->getRepository(Company::class);
+        for ($i = 0; $i < 2; $i++) {
+            $criteria = new \Doctrine\Common\Collections\Criteria();
+
+            $criteria->where($criteria->expr()->eq('id', $companies[$i]));
+
+            $matching = $companyRepo->matching($criteria);
+            if (0 == count($matching)) {
+                throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("Invalid argument");
+            }
+
+            $entity = $matching[0];
+            $entities[] = $entity;
+            $names[] = $entity->getName();
+        }
+
+        $qb = $em
+                ->createQueryBuilder();
+
+        $qb->select([
+                'P',
+                "P.name AS name"
+            ])
+            ->from('App\Entity\Person', 'P')
+            ->innerJoin('App\Entity\PersonCompany', 'PC1',
+                       \Doctrine\ORM\Query\Expr\Join::WITH,
+                       'PC1.person = P AND PC1.company = :company1')
+            ->innerJoin('App\Entity\PersonCompany', 'PC2',
+                       \Doctrine\ORM\Query\Expr\Join::WITH,
+                       'PC2.person = P AND PC2.company = :company2')
+            ->setParameters([ 'company1' => $entities[0], 'company2' => $entities[1] ])
+            ->groupBy('P.id')
+            ->orderBy('name')
+            ;
+
+        $pagination = $paginator->paginate(
+            $qb->getQuery(),
+            $request->query->get('page', 1),
+            self::PAGE_LIMIT,
+            [
+                'defaultSortFieldName' => 'name',
+                'defaultSortDirection' => 'asc',
+            ]
+        );
+
+        return $this->render('Person/shared.html.twig', [
+            'pageTitle' => 'Gemeinsame Personen von'
+                . ' ' . implode(' und ', $names),
+            'pagination' => $pagination,
         ]);
     }
 }
