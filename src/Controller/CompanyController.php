@@ -76,7 +76,8 @@ class CompanyController extends AbstractController
             $person_ids[] = $personCompany->getPerson()->getId();
         }
 
-        if (0 == count($person_ids)) {
+        $num_persons = count($person_ids);
+        if (0 == $num_persons) {
             return $person_ids;
         }
 
@@ -85,13 +86,17 @@ class CompanyController extends AbstractController
             . " WHERE person_id IN (" . join(', ', $person_ids) . ')'
             . " AND company_id <> " . $entity->getId()
             . " ORDER BY company_id";
-        $num_persons = count($person_ids);
 
         $persons_by_company = [];
         $stmt = $dbconn->executeQuery($querystr);
         while ($row = $stmt->fetchAssociative()) {
             if (!array_key_exists($row['company_id'], $persons_by_company)) {
                 $persons_by_company[$row['company_id']] = [];
+            }
+
+            // avoid duplicates
+            if (in_array($row['person_id'], $persons_by_company[$row['company_id']])) {
+                continue;
             }
 
             $persons_by_company[$row['company_id']][] = $row['person_id'];
