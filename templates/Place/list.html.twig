@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+<h1>Orte</h1>
+{#
+<form method="get" action="{{ path(app.request.attributes.get('_route')) }}">
+    <div class="form-group">
+        {{ form_rest(form) }}
+    </div>
+</form>
+#}
+<div class="d-flex flex-row mb-3">
+    <div>Sortieren</div>
+    <div class="ms-2"{% if pagination.isSorted('name') %} style="font-weight: bold"{% endif %}>{{ knp_pagination_sortable(pagination, 'Name', 'name', {}, {'direction': 'asc'}) }}</div>
+    <div class="ms-2"{% if pagination.isSorted('numCompanies') %} style="font-weight: bold"{% endif %}>{{ knp_pagination_sortable(pagination, 'Anzahl Firmen', 'numCompanies', {}, {'direction': 'desc'}) }}</div>
+</div>
+{% for row in pagination %}
+    {% set info = row.infoByYear|first %}
+    <div>
+        <a href="{{ path('place_show', { 'osmID': info.osmID }) }}">
+            {% if row.name is empty %}
+            -- ohne Ortsname --
+            {% else %}
+                {{ row.name }}
+            {% endif %}
+        </a> ({{ row['numCompanies'] }})
+    </div>
+{% endfor %}
+
+{#
+<div class="navigation">
+    {{ knp_pagination_render(pagination) }}
+</div>
+#}
+
+{% endblock %}

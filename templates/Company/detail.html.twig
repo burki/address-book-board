@@ -6,11 +6,14 @@
 {% for year, info in company.infoByYear %}
     {#<h2>{{ year }}</h2>#}
     <div>
-        {% if info.description is defined %}
-            <i>{{ info.description }}</i>{% if info.address is defined %}, {% endif %}
-        {% endif %}
-        {% if info.address is defined %}
-            {{ info.address }}
+        {% if info.osmID is defined %}
+        <a href="{{ path('place_show', { 'osmID': info.osmID }) }}">
+            {% if info.placeNameGeocoded is empty %}
+                -- ohne Ortsname --
+            {% else %}
+                {{ info.placeNameGeocoded }}
+            {% endif %}
+        </a>
         {% endif %}
         {% if company.personRelations|length > 0 %}
             {% for isBoard,label in { 1: 'Aufsichtsrat', 0: 'Vorstand',  } %}

@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+{% set place = info|first %}
+<h1>{{ place.placeNameGeocoded }} ({{ place.placeNameFromCompany }})</h1>
+
+<h3>Firmen</h3>
+<ul>
+{% for row in companies %}
+    {% set company = row[0] %}
+    <li>
+        <a href="{{ path('company_show', { 'id': company.id }) }}">{{ company.fullName }}</a>
+        ({{ row['numPersons'] }})
+    </li>
+{% endfor %}
+</ul>
+
+<h3>Mit diesen Firmen verbundene Personen</h3>
+<ul>
+{% for row in persons %}
+    {% set person = row[0] %}
+    <li>
+        <a href="{{ path('person_show', { 'id': person.id }) }}">{{ person.fullName }}</a>
+         ({{ row['numCompaniesPlace'] }} / {{ row['numCompanies'] }}, {{ (100 * row['percentageCompanies'])|round(1) }}%)
+    </li>
+{% endfor %}
+</ul>
+
+{% endblock %}
