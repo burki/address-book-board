@@ -1,29 +1,83 @@
 {% extends 'base.html.twig' %}
 
+{% import 'Shared/map-leaflet.html.twig' as map %}
+
+{% block head %}
+    {{ parent() }}
+
+    {{ map.head() }}
+    {{ map.head_extramarkers() }}
+    <script>
+    {{ map.defineSvgIcons() }}
+    </script>
+
+    {{ map.head_markercluster() }}
+{% endblock %}
+
 {% block body %}
 {% set place = info|first %}
 <h1>{{ place.placeNameGeocoded }} ({{ place.placeNameFromCompany }})</h1>
+<div class="container-fluid p-0">
+    <div class="row">
+        <div class="col-md-9">
 
-<h3>Firmen</h3>
-<ul>
-{% for row in companies %}
-    {% set company = row[0] %}
-    <li>
-        <a href="{{ path('company_show', { 'id': company.id }) }}">{{ company.fullName }}</a>
-        ({{ row['numPersons'] }})
-    </li>
-{% endfor %}
-</ul>
+            <h3>Firmen</h3>
+            <ul>
+            {% for row in companies %}
+                {% set company = row[0] %}
+                <li>
+                    <a href="{{ path('company_show', { 'id': company.id }) }}">{{ company.fullName }}</a>
+                    ({{ row['numPersons'] }})
+                </li>
+            {% endfor %}
+            </ul>
 
-<h3>Mit diesen Firmen verbundene Personen</h3>
-<ul>
-{% for row in persons %}
-    {% set person = row[0] %}
-    <li>
-        <a href="{{ path('person_show', { 'id': person.id }) }}">{{ person.fullName }}</a>
-         ({{ row['numCompaniesPlace'] }} / {{ row['numCompanies'] }}, {{ (100 * row['percentageCompanies'])|round(1) }}%)
-    </li>
-{% endfor %}
-</ul>
+            <h3>Mit diesen Firmen verbundene Personen</h3>
+            <ul>
+            {% for row in persons %}
+                {% set person = row[0] %}
+                <li>
+                    <a href="{{ path('person_show', { 'id': person.id }) }}">{{ person.fullName }}</a>
+                    ({{ row['numCompaniesPlace'] }} / {{ row['numCompanies'] }}, {{ (100 * row['percentageCompanies'])|round(1) }}%)
+                </li>
+            {% endfor %}
+            </ul>
+        </div><!-- col -->
+        <div class="col-md-3">
+        {% if place.lat is not empty and place.lon is not empty %}
+            <div id="map-container">
+                <div id="map" class="mt-1 w-100" style="width: 100%; min-height: 360px"></div>
+                <script>
+                function adjustMapSize() {
+                    /*
+                    jQuery('#map').height(function(index, height) {
+                        return window.innerHeight - $(this).offset().top;
+                    });
+                    */
+                }
 
+                document.addEventListener("DOMContentLoaded", function(event) {
+                    adjustMapSize();
+                    jQuery( window ).resize(adjustMapSize);
+                });
+
+                var map = L.map('map', { attributionControl: false });
+                L.control.attribution({
+                    prefix: ''
+                }).addTo(map);
+
+                var markerOptions = {
+                    icon: blueIcon
+                };
+                L.marker([ {{ place.lat }}, {{ place.lon }} ], markerOptions)
+                    .addTo(map);
+                map.setView([ {{ place.lat }}, {{ place.lon }} ], 10);
+
+                {{ map.addTileLayer() }}
+                </script>
+            </div>
+        {% endif %}
+        </div><!-- col -->
+    </div><!-- row -->
+</div>
 {% endblock %}
