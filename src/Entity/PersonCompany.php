@@ -3,10 +3,9 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * Person
+ * Person.
  */
 #[ORM\Table(name: 'person_company', options: ['collate' => 'utf8mb4_unicode_520_ci'])]
 #[ORM\Entity]

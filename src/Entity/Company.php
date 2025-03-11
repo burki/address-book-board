@@ -4,11 +4,10 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * Company
+ * Company.
  */
 #[ORM\Table(name: 'company', options: ['collate' => 'utf8mb4_unicode_520_ci'])]
 #[ORM\Entity]
@@ -91,7 +90,8 @@ class Company
     {
         if (is_null($year)) {
             $this->infoByYear = $info;
-        } else {
+        }
+        else {
             if (is_null($this->infoByYear)) {
                 $this->infoByYear = [];
             }
@@ -102,7 +102,7 @@ class Company
         return $this;
     }
 
-    public function getInfoByYear($year = null): array|null
+    public function getInfoByYear($year = null): ?array
     {
         if (is_null($year)) {
             return $this->infoByYear;

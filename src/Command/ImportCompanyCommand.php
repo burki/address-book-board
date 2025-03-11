@@ -1,18 +1,16 @@
 <?php
+
 // src/Command/ImportCompanyCommand.php
 
 namespace App\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
-
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-
 use Spatie\SimpleExcel\SimpleExcelReader;
-
 use App\Entity\Company;
 
 // the name of the command is what users type after "php bin/console"
@@ -56,24 +54,24 @@ class ImportCompanyCommand extends Command
         $reader = SimpleExcelReader::create($fname, 'csv')
             ->useDelimiter("\t")
             // ->take(5) // just for testing
-            ;
+        ;
 
         // $rows is an instance of Illuminate\Support\LazyCollection
         $rows = $reader->getRows();
 
-        $rows->each(function(array $row) use ($companyRepository) {
+        $rows->each(function (array $row) use ($companyRepository) {
             static $count = 0;
 
-            if (!array_key_exists('nodeType', $row) || $row['nodeType'] !== 'company') {
+            if (!array_key_exists('nodeType', $row) || 'company' !== $row['nodeType']) {
                 return;
             }
 
-            $name_full = rtrim($row['name'], " .");
+            $name_full = rtrim($row['name'], ' .');
 
-            $company = $companyRepository->findOneBy([ 'nameFull' => $name_full]);
+            $company = $companyRepository->findOneBy(['nameFull' => $name_full]);
 
-            if ($company === null) {
-                $company = new \App\Entity\Company();
+            if (null === $company) {
+                $company = new Company();
                 $company->setFullname($name_full);
             }
             else if (!$this->updateExisting) {
@@ -82,10 +80,10 @@ class ImportCompanyCommand extends Command
 
             $company->setName($name_full); // TODO: maybe shorten by removing place
 
-            echo ++$count . ': '. $company->getFullname() . "\n";
+            echo ++$count . ': ' . $company->getFullname() . "\n";
 
             $this->entityManager->persist($company);
-            if (++$this->countPersists % 20 === 0) {
+            if (0 === ++$this->countPersists % 20) {
                 $this->entityManager->flush();
                 $this->entityManager->clear();
                 $this->countPersists = 0;

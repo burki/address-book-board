@@ -1,9 +1,9 @@
 <?php
 
 // PersonFilterType.php
+
 namespace App\Filter;
 
-use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 use Symfony\Component\Form\FormBuilderInterface;
 use Spiriit\Bundle\FormFilterBundle\Filter\Query\QueryInterface;
 use Spiriit\Bundle\FormFilterBundle\Filter\Form\Type as Filters;
@@ -72,7 +72,7 @@ class PersonFilterType extends BaseFilterType
                     ->andX(join(' AND ', $andParts));
 
                 return $filterQuery->createCondition($expression, $parameters);
-            }
+            },
         ]);
     }
 

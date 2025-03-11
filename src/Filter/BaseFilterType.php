@@ -1,6 +1,7 @@
 <?php
 
 // BaseFilterType.php
+
 namespace App\Filter;
 
 use Symfony\Component\Form\AbstractType;
@@ -17,7 +18,7 @@ class BaseFilterType extends AbstractType
     {
         $resolver->setDefaults([
             'csrf_protection'   => false,
-            'validation_groups' => ['filtering'] // avoid NotBlank() constraint-related message
+            'validation_groups' => ['filtering'], // avoid NotBlank() constraint-related message
         ]);
     }
 }

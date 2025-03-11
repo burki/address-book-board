@@ -1,6 +1,7 @@
 <?php
 
 // CompanyFilterType.php
+
 namespace App\Filter;
 
 use Symfony\Component\Form\FormBuilderInterface;
@@ -22,13 +23,13 @@ class CompanyFilterType extends BaseFilterType
 
                 // expression that represents the condition
                 $expression = $filterQuery->getExpr()
-                    ->andX('REGEXP(LOWER(' . $field.'), LOWER(:'.$paramName.')) = true');
+                    ->andX('REGEXP(LOWER(' . $field . '), LOWER(:' . $paramName . ')) = true');
 
                 // expression parameters
                 $parameters = [$paramName => self::mysql_regex_escape($values['value'])];
 
                 return $filterQuery->createCondition($expression, $parameters);
-            }
+            },
         ]);
     }
 

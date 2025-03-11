@@ -1,18 +1,16 @@
 <?php
+
 // src/Command/ImportEdgeCommand.php
 
 namespace App\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
-
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-
 use Spatie\SimpleExcel\SimpleExcelReader;
-
 use App\Entity\Person;
 use App\Entity\Company;
 use App\Entity\PersonCompany;
@@ -59,22 +57,20 @@ class ImportEdgeCommand extends Command
 
         $reader = SimpleExcelReader::create($fname, 'csv')
             ->useDelimiter("\t")
-            //->take(5) // just for testing
-            ;
+            // ->take(5) // just for testing
+        ;
 
         // $rows is an instance of Illuminate\Support\LazyCollection
         $rows = $reader->getRows();
 
-        $rows->each(function(array $row)
-             use ($personRepository, $companyRepository, $personCompanyRepository)
-        {
+        $rows->each(function (array $row) use ($personRepository, $companyRepository, $personCompanyRepository) {
             static $count = 0;
 
             if (empty($row['person']) || empty($row['company']) || empty($row['year'])) {
                 return;
             }
 
-            $person_name = rtrim($row['person'], " ,");
+            $person_name = rtrim($row['person'], ' ,');
             $person = $personRepository->findOneBy([
                 'nameFull' => $person_name,
             ]);
@@ -82,7 +78,7 @@ class ImportEdgeCommand extends Command
                 echo 'No person found for: ' . $person_name . "\n";
             }
 
-            $company_name = rtrim($row['company'], " .");
+            $company_name = rtrim($row['company'], ' .');
             $company = $companyRepository->findOneBy([
                 'nameFull' => $company_name,
             ]);
@@ -98,8 +94,8 @@ class ImportEdgeCommand extends Command
                 'year' => $year,
             ]);
 
-            if ($personCompany === null) {
-                $personCompany = new \App\Entity\PersonCompany();
+            if (null === $personCompany) {
+                $personCompany = new PersonCompany();
                 $personCompany->setPerson($person);
                 $personCompany->setCompany($company);
                 $personCompany->setYear($year);
@@ -109,12 +105,12 @@ class ImportEdgeCommand extends Command
             }
 
             $personCompany->setRelationship($row['relationship'] ?? null);
-            $personCompany->setIsBoard($row['isAufsichtsrat'] === 'True');
+            $personCompany->setIsBoard('True' === $row['isAufsichtsrat']);
 
-            echo ++$count . ': '. $person->getFullname() . '->' . $company->getFullname() . "\n";
+            echo ++$count . ': ' . $person->getFullname() . '->' . $company->getFullname() . "\n";
 
             $this->entityManager->persist($company);
-            if (++$this->countPersists % 20 === 0) {
+            if (0 === ++$this->countPersists % 20) {
                 $this->entityManager->flush();
                 $this->entityManager->clear();
                 $this->countPersists = 0;

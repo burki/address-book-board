@@ -1,25 +1,23 @@
 <?php
+
 // src/Command/ImportPersonCommand.php
 
 namespace App\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
-
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-
 use Spatie\SimpleExcel\SimpleExcelReader;
-
 use App\Entity\Person;
 
 // the name of the command is what users type after "php bin/console"
 #[AsCommand(name: 'app:import:person')]
 class ImportPersonCommand extends Command
 {
-    protected static $ACADEMIC_TITLES = [ 'Dr.', 'Prof.', 'Prof. Dr.' ];
+    protected static $ACADEMIC_TITLES = ['Dr.', 'Prof.', 'Prof. Dr.'];
 
     protected $updateExisting = true;
 
@@ -58,24 +56,24 @@ class ImportPersonCommand extends Command
         $reader = SimpleExcelReader::create($fname, 'csv')
             ->useDelimiter("\t")
             // ->take(5) // just for testing
-            ;
+        ;
 
         // $rows is an instance of Illuminate\Support\LazyCollection
         $rows = $reader->getRows();
 
-        $rows->each(function(array $row) use ($personRepository) {
+        $rows->each(function (array $row) use ($personRepository) {
             static $count = 0;
 
-            if (!array_key_exists('nodeType', $row) || $row['nodeType'] !== 'person') {
+            if (!array_key_exists('nodeType', $row) || 'person' !== $row['nodeType']) {
                 return;
             }
 
-            $name_full = rtrim($row['name'], " ,");
+            $name_full = rtrim($row['name'], ' ,');
 
-            $person = $personRepository->findOneBy([ 'nameFull' => $name_full]);
+            $person = $personRepository->findOneBy(['nameFull' => $name_full]);
 
-            if ($person === null) {
-                $person = new \App\Entity\Person();
+            if (null === $person) {
+                $person = new Person();
                 $person->setFullname($name_full);
             }
             else if (!$this->updateExisting) {
@@ -83,7 +81,7 @@ class ImportPersonCommand extends Command
             }
 
             $full_parts = explode(', ', $name_full);
-            $name_parts = [ $full_parts[0] ];
+            $name_parts = [$full_parts[0]];
             $description_parts = [];
 
             if (count($full_parts) > 1) {
@@ -107,17 +105,17 @@ class ImportPersonCommand extends Command
                 $info['description'] = join(', ', $description_parts);
             }
 
-            foreach ([ 'address', 'scanPageNo', 'lineID' ] as $key) {
-                if (array_key_exists($key, $row) && !is_null($row[$key]) && $row[$key] !== '') {
+            foreach (['address', 'scanPageNo', 'lineID'] as $key) {
+                if (array_key_exists($key, $row) && !is_null($row[$key]) && '' !== $row[$key]) {
                     $info[$key] = $row[$key];
                 }
             }
             $person->setInfoByYear($info, $row['year']);
 
-            echo ++$count . ': '. $person->getFullname() . "\n";
+            echo ++$count . ': ' . $person->getFullname() . "\n";
 
             $this->entityManager->persist($person);
-            if (++$this->countPersists % 20 === 0) {
+            if (0 === ++$this->countPersists % 20) {
                 $this->entityManager->flush();
                 $this->entityManager->clear();
                 $this->countPersists = 0;

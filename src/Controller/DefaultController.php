@@ -1,14 +1,14 @@
 <?php
+
 // src/Controller/DefaultController.php
+
 namespace App\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
-
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-
 use App\Entity\Company;
 use App\Entity\Person;
 
@@ -20,8 +20,7 @@ class DefaultController extends AbstractController
     public function homeAction(
         Request $request,
         EntityManagerInterface $em
-    ): Response
-    {
+    ): Response {
         // initialize a query builder
         $personCount = $em
             ->getRepository(Person::class)
@@ -29,7 +28,7 @@ class DefaultController extends AbstractController
             ->select('count(p.id)')
             ->getQuery()
             ->getOneOrNullResult()
-            ;
+        ;
 
         $companyCount = $em
             ->getRepository(Company::class)
@@ -37,7 +36,7 @@ class DefaultController extends AbstractController
             ->select('count(c.id)')
             ->getQuery()
             ->getOneOrNullResult()
-            ;
+        ;
 
         return $this->render('Default/home.html.twig', [
             'personCount' => $personCount[1],
@@ -48,8 +47,7 @@ class DefaultController extends AbstractController
     #[Route('/about', name: 'about')]
     public function aboutAction(
         Request $request
-    ): Response
-    {
+    ): Response {
         return $this->render('Default/about.html.twig');
     }
 }

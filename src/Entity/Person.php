@@ -3,13 +3,11 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * Person
+ * Person.
  */
 #[ORM\Table(name: 'person', options: ['collate' => 'utf8mb4_unicode_520_ci'])]
 #[ORM\Entity]
@@ -92,7 +90,8 @@ class Person
     {
         if (is_null($year)) {
             $this->infoByYear = $info;
-        } else {
+        }
+        else {
             if (is_null($this->infoByYear)) {
                 $this->infoByYear = [];
             }
@@ -103,7 +102,7 @@ class Person
         return $this;
     }
 
-    public function getInfoByYear($year = null): array|null
+    public function getInfoByYear($year = null): ?array
     {
         if (is_null($year)) {
             return $this->infoByYear;
