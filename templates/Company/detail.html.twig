@@ -3,7 +3,7 @@
 {% block body %}
 
 <h1>{{ company.name }}</h1>
-{% for year, info in { 1927: {} } %}
+{% for year, info in company.infoByYear %}
     {#<h2>{{ year }}</h2>#}
     <div>
         {% if info.description is defined %}

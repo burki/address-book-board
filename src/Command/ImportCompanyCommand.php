@@ -36,7 +36,7 @@ class ImportCompanyCommand extends Command
             ->setDescription('Import company from tsv.')
             // the command help shown when running the command with the "--help" option
             ->setHelp('This inserts/updates company table.')
-            ->addArgument('fname', InputArgument::REQUIRED, 'File name to convert.')
+            ->addArgument('fname', InputArgument::REQUIRED, 'File name to import.')
         ;
     }
 
@@ -79,6 +79,16 @@ class ImportCompanyCommand extends Command
             }
 
             $company->setName($name_full); // TODO: maybe shorten by removing place
+
+            if (!empty($row['year'])) {
+                $company->setInfoByYear([
+                    'placeNameFromCompany' => $row['placeNameFromCompany'],
+                    'placeNameGeocoded' => $row['placeNameGeocoded'],
+                    'lat' => (float) $row['lat'],
+                    'lon' => (float) $row['lon'],
+                    'osmID' => (int) $row['osmID'],
+                ], $row['year']);
+            }
 
             echo ++$count . ': ' . $company->getFullname() . "\n";
 

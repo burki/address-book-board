@@ -38,7 +38,7 @@ class ImportPersonCommand extends Command
             ->setDescription('Import person from tsv.')
             // the command help shown when running the command with the "--help" option
             ->setHelp('This inserts/updates person table.')
-            ->addArgument('fname', InputArgument::REQUIRED, 'File name to convert.')
+            ->addArgument('fname', InputArgument::REQUIRED, 'File name to import.')
         ;
     }
 
