@@ -18,6 +18,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use App\Entity\Company;
 use App\Filter\PersonFilterType;
 use App\Entity\Person;
+use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 
 class PersonController extends AbstractController
 {
@@ -76,7 +77,8 @@ class PersonController extends AbstractController
             $company_ids[] = $personCompany->getCompany()->getId();
         }
 
-        if (0 == count($company_ids)) {
+        $num_companies = count($company_ids);
+        if (0 == $num_companies) {
             return $company_ids;
         }
 
@@ -85,7 +87,6 @@ class PersonController extends AbstractController
                 . " WHERE company_id IN (" . join(', ', $company_ids) . ')'
                 . " AND person_id <> " . $entity->getId()
                 . " ORDER BY person_id";
-        $num_companies = count($company_ids);
 
         $companies_by_person = [];
         $stmt = $dbconn->executeQuery($querystr);
@@ -93,7 +94,11 @@ class PersonController extends AbstractController
             if (!array_key_exists($row['person_id'], $companies_by_person)) {
                 $companies_by_person[$row['person_id']] = [];
             }
-            $companies_by_person[$row['person_id']][] = $row['company_id'];
+
+            if (!in_array($row['company_id'], $companies_by_person[$row['person_id']])) {
+                // person can appear in multiple roles, maybe add DISTINCT to query above
+                $companies_by_person[$row['person_id']][] = $row['company_id'];
+            }
         }
 
         $jaccard_index = [];
