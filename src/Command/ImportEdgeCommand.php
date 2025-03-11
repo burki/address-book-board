@@ -82,7 +82,7 @@ class ImportEdgeCommand extends Command
                 echo 'No person found for: ' . $person_name . "\n";
             }
 
-            $company_name = rtrim($row['company']);
+            $company_name = rtrim($row['company'], " .");
             $company = $companyRepository->findOneBy([
                 'nameFull' => $company_name,
             ]);

@@ -68,7 +68,7 @@ class ImportCompanyCommand extends Command
                 return;
             }
 
-            $name_full = rtrim($row['name']);
+            $name_full = rtrim($row['name'], " .");
 
             $company = $companyRepository->findOneBy([ 'nameFull' => $name_full]);
 
@@ -80,7 +80,7 @@ class ImportCompanyCommand extends Command
                 return;
             }
 
-            $company->setName($row['name']); // TODO: maybe shorten by place
+            $company->setName($name_full); // TODO: maybe shorten by removing place
 
             echo ++$count . ': '. $company->getFullname() . "\n";
 
