@@ -25,6 +25,8 @@ doctrine:
         dql:
             string_functions:
                 regexp: DoctrineExtensions\Query\Mysql\Regexp
+                JSON_EXTRACT: Scienta\DoctrineJsonFunctions\Query\AST\Functions\Mysql\JsonExtract
+                JSON_UNQUOTE: Scienta\DoctrineJsonFunctions\Query\AST\Functions\Mysql\JsonUnquote
 
 when@test:
     doctrine:
