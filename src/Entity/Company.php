@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -14,11 +15,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 #[UniqueEntity('nameFull')]
 class Company
 {
-    public function __construct()
-    {
-        $this->personRelations = new ArrayCollection();
-    }
-
     /**
      * @var int
      */
@@ -52,10 +48,15 @@ class Company
     private $infoByYear;
 
     /**
-     * @var PersonCompany[]
+     * @var Collection<PersonCompany>
      */
     #[ORM\OneToMany(targetEntity: PersonCompany::class, mappedBy: 'company', cascade: ['persist'], fetch: 'EAGER')]
-    public $personRelations;
+    public Collection $personRelations;
+
+    public function __construct()
+    {
+        $this->personRelations = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
