@@ -1,0 +1,105 @@
+{% macro head() %}
+    <link rel="stylesheet" href="{{ app.request.basepath }}/vendor/leaflet-1.9.4/leaflet.css" />
+    <script src="{{ app.request.basepath }}/vendor/leaflet-1.9.4/leaflet.js"></script>
+{% endmacro %}
+
+{% macro head_markercluster() %}
+    <link rel="stylesheet" href="{{ app.request.basepath }}/vendor/leaflet.markercluster-1.4.1/MarkerCluster.css" />
+    <link rel="stylesheet" href="{{ app.request.basepath }}/vendor/leaflet.markercluster-1.4.1/MarkerCluster.Default.css" />
+    <script src="{{ app.request.basepath }}/vendor/leaflet.markercluster-1.4.1/leaflet.markercluster.js"></script>
+    <script>
+        function escapeHtml(text) {
+            return $('<div/>').text(text).html();
+        }
+    </script>
+{% endmacro %}
+
+{% macro head_heatmap() %}
+    <script src="{{ app.request.basepath }}/vendor/leaflet-heat/leaflet-heat.js"></script>
+{% endmacro %}
+
+{% macro head_extramarkers() %}
+    <!-- leaflet-extra-markers -->
+    <link rel="stylesheet" href="{{ app.request.basepath }}/vendor/leaflet-extra-markers-1.2.2/css/leaflet.extra-markers.min.css" />
+    <script src="{{ app.request.basepath }}/vendor/leaflet-extra-markers-1.2.2/js/leaflet.extra-markers.min.js"></script>
+{% endmacro %}
+
+{% macro defineSvgIcons() %}
+    var blueIcon = L.ExtraMarkers.icon({
+        shape: 'circle',
+        svg: true,
+        markerColor: '#478aa9',
+        icon: 'fa-number',
+        number: '&#x25CF;',
+        prefix: 'fa'
+    });
+
+    var yellowIcon = L.ExtraMarkers.icon({
+        shape: 'circle',
+        svg: true,
+        markerColor: '#e6bb33',
+        icon: 'fa-number',
+        number: '&#x25CF;',
+        prefix: 'fa'
+    });
+
+    var grayIcon = L.ExtraMarkers.icon({
+        shape: 'circle',
+        svg: true,
+        markerColor: '#7b7b7b',
+        icon: 'fa-number',
+        number: '&#x25CF;',
+        prefix: 'fa'
+    });
+{% endmacro %}
+
+{% macro addTileLayer(maxZoom) %}
+    {% if true %}
+    // for styles, see https://docs.mapbox.com/api/maps/#styles
+    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+        tileSize: 512,
+        minZoom: 1,
+        maxZoom: {{ maxZoom|default(16) }},
+        zoomOffset: -1,
+        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+            '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+            'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        id: 'hausverstand/ck9n3jwdp2e6f1imr5ccrf682', // 'mapbox/outdoors-v11',
+        accessToken: 'pk.eyJ1IjoiaGF1c3ZlcnN0YW5kIiwiYSI6ImNpemU2OWJvaTAwNHIyd252b2ptaDV2NjkifQ.FGA8-opghZHquZJKlHSFdg',
+    }).addTo(map);
+    {% else %}
+    L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: {{ maxZoom|default(18) }},
+        attribution: 'Map data &copy; <a href="https://openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+            '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+        id: 'mapbox.streets'
+    }).addTo(map);
+    {% endif %}
+{% endmacro %}
+
+{% macro showMap(bounds) %}
+    {% import _self as map %}
+    var map = null;
+    function showMap() {
+        map = L.map('map', { zoomControl: false, attributionControl: false });
+        L.control.zoom({
+            position: 'topleft'
+        }).addTo(map);
+        L.control.attribution({
+            prefix: ''
+        }).addTo(map);
+
+        {% if bounds is empty %}
+        map.setView([20, 0], 2);
+        {% elseif bounds[0] is iterable %}
+        map.fitBounds([
+            [ {{ bounds[0]|join(', ') }} ],
+            [ {{ bounds[1]|join(', ') }} ]
+        ], { padding: [3, 3] });
+        {% else %}
+        map.setView([ {{ bounds|join(', ') }}], 8);
+        {% endif %}
+
+        {{ map.addTileLayer() }}
+    }
+{% endmacro %}

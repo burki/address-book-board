@@ -12,6 +12,10 @@
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
+
+        {% block head %}
+        {# for Shared/map-leaflet.html.twig #}
+        {% endblock %}
     </head>
     <body>
         <header class="p-3 text-bg-dark">

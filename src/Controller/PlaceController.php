@@ -72,6 +72,56 @@ class PlaceController extends AbstractController
         ]);
     }
 
+    #[Route('/place/map', name: 'place_map')]
+    public function mapAction(
+        Request $request,
+        EntityManagerInterface $em
+    ): Response {
+        $data = [];
+
+        $qb = $em
+            ->getRepository(Company::class)
+            ->createQueryBuilder('c')
+            ->select('c.infoByYear, JSON_UNQUOTE(JSON_EXTRACT(c.infoByYear, \'$."1926".placeNameGeocoded\')) AS name, JSON_UNQUOTE(JSON_EXTRACT(c.infoByYear, \'$."1926".osmID\')) AS osmID, COUNT(c.id) AS numCompanies')
+            ->groupBy('osmID')
+        ;
+
+        foreach ($qb->getQuery()->getResult() as $row) {
+            $infoByYear = $row['infoByYear'];
+            if (!array_key_exists('1926', $infoByYear)) {
+                continue;
+            }
+            $info = $infoByYear['1926'];
+            [$lat, $lon] = [$info['lat'], $info['lon']];
+            if (empty($lat) || empty($lon)) {
+                continue;
+            }
+
+            $title = sprintf(
+                '<a href="%s">%s</a>',
+                $this->generateUrl('place_show', [ 'osmID' => $info['osmID'] ]),
+                htmlspecialchars($row['name'], ENT_COMPAT, 'utf-8'),
+            );
+
+            $info = [
+                (float) $lat, (float) $lon,
+                $title,
+                $row['numCompanies'],
+            ];
+
+            $data[] = $info;
+        }
+
+        return $this->render('Place/map.html.twig', [
+            'data' => $data,
+            'disableClusteringAtZoom' => 8,
+            'bounds' => [
+                [ 54, 12 ],
+                [ 48, 9 ],
+            ],
+        ]);
+    }
+
     protected function findCompaniesByPlace(
         int $osmID,
         EntityManagerInterface $em

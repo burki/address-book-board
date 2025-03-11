@@ -1,0 +1,122 @@
+{% extends 'base.html.twig' %}
+
+{% import 'Shared/map-leaflet.html.twig' as map %}
+
+{% block head %}
+    {{ parent() }}
+
+    {{ map.head() }}
+    {{ map.head_extramarkers() }}
+    <script>
+    {{ map.defineSvgIcons() }}
+    </script>
+
+    {{ map.head_markercluster() }}
+{% endblock %}
+
+{% block body %}
+    <h1>Orte</h1>
+    <div>
+        <a href="{{ path('place_list') }}">Liste</a> | <b>Karte</b>
+    </div>
+
+    <div id="map-container">
+        <div id="map" class="w-100" style="min-height: 350px; height: 75vh"></div>
+    </div>
+
+    <script type="text/javascript">
+        function isTouchDevice ()
+        {
+            return (('ontouchstart' in window)
+                    || (navigator.MaxTouchPoints > 0)
+                    || (navigator.msMaxTouchPoints > 0));
+        }
+
+        {{ map.showMap(bounds) }}
+        showMap();
+
+        // place markers
+        var markerStyle = {% if markerStyle is defined %}{{ markerStyle|json_encode|raw }}{% else %}'regular'{% endif %};
+        var tooltipProperties = {
+            /*
+            permanent: false,
+            direction: 'center',
+            opacity: 1,
+            offset: [0, 0],
+            className: "my-label"
+            */
+        };
+
+        var markers = L.markerClusterGroup({
+            iconCreateFunction: function (cluster) {
+                var markers = cluster.getAllChildMarkers();
+                var n = 0;
+                for (var i = 0; i < markers.length; i++) {
+                    n += markers[i].number;
+                }
+                var childCount = n;
+                var c = ' marker-cluster-';
+                if (childCount < 10) {
+                    c += 'small';
+                } else if (childCount < 100) {
+                    c += 'medium';
+                } else {
+                    c += 'large';
+                }
+
+                return new L.DivIcon({
+                    html: '<div><span>' + childCount + '</span></div>',
+                    className: 'marker-cluster' + c,
+                    iconSize: new L.Point(40, 40),
+                });
+            },
+            spiderfyOnMaxZoom: false,
+            disableClusteringAtZoom: {% if disableClusteringAtZoom is defined and disableClusteringAtZoom  is not empty %}{{ disableClusteringAtZoom }}{% else %}5{% endif %}
+        });
+
+        var addressPoints = {{ data|json_encode|raw }};
+        var maxWidth = 340
+        if (window.innerWidth * 0.7 < maxWidth) {
+            maxWidth = window.innerWidth * 0.7;
+            if (maxWidth < 200) {
+                maxWidth = 200;
+            }
+        }
+
+        var popupOptions = {
+            maxWidth : maxWidth
+        };
+
+        for (var i = 0; i < addressPoints.length; i++) {
+            var a = addressPoints[i];
+            var title = a[2];
+            var linked = title[0] == '<'; // is a <a href="">... tag
+            var count = a[3];
+
+            var markerOptions = {
+                title: title,
+                icon: count > 1
+                    ? (count > 10 ? yellowIcon : blueIcon)
+                    : grayIcon
+            };
+
+            var marker = L.marker(L.latLng(a[0], a[1]), markerOptions);
+
+            marker.number = count;
+
+            marker.bindPopup(
+                '<strong>' + title + '</strong>'
+                + '<div>' + count + ' ' + (count > 1 ? 'Firmen' : 'Firma') + '</div>',
+                popupOptions);
+
+            markers.addLayer(marker);
+        }
+
+        map.addLayer(markers);
+        {% if bounds is empty %}
+        if (addressPoints.length > 0) {
+            map.fitBounds(markers.getBounds().pad(0.1));
+        }
+        {% endif %}
+    </script>
+{% endblock %}
