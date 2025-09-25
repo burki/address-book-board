@@ -18,7 +18,7 @@ use App\Entity\Person;
 
 class PlaceController extends AbstractController
 {
-    const PAGE_LIMIT = 10000;
+    protected const PAGE_LIMIT = 10000;
 
     #[Route('/place', name: 'place_list')]
     public function listAction(
@@ -99,7 +99,7 @@ class PlaceController extends AbstractController
 
             $title = sprintf(
                 '<a href="%s">%s</a>',
-                $this->generateUrl('place_show', [ 'osmID' => $info['osmID'] ]),
+                $this->generateUrl('place_show', ['osmID' => $info['osmID']]),
                 htmlspecialchars($row['name'], ENT_COMPAT, 'utf-8'),
             );
 
@@ -116,8 +116,8 @@ class PlaceController extends AbstractController
             'data' => $data,
             'disableClusteringAtZoom' => 8,
             'bounds' => [
-                [ 54, 12 ],
-                [ 48, 9 ],
+                [54, 12],
+                [48, 9],
             ],
         ]);
     }

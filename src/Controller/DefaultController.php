@@ -14,8 +14,6 @@ use App\Entity\Person;
 
 class DefaultController extends AbstractController
 {
-    const PAGE_LIMIT = 100;
-
     #[Route('/', name: 'home')]
     public function homeAction(
         Request $request,

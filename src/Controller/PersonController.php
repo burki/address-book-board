@@ -18,7 +18,7 @@ use App\Entity\Person;
 
 class PersonController extends AbstractController
 {
-    const PAGE_LIMIT = 100;
+    protected const PAGE_LIMIT = 100;
 
     #[Route('/person', name: 'person_list')]
     public function listAction(
@@ -113,8 +113,7 @@ class PersonController extends AbstractController
                     'count' => $num_shared,
                     'coefficient' => 1.0
                             * $num_shared // shared
-                            /
-                            ($row['num_companies'] + $num_companies - $num_shared),
+                            / ($row['num_companies'] + $num_companies - $num_shared),
                 ];
             }
 
