@@ -202,7 +202,8 @@ class PersonController extends AbstractController
                 \Doctrine\ORM\Query\Expr\Join::WITH,
                 'PC2.person = P AND PC2.company = :company2'
             )
-            ->setParameters(['company1' => $entities[0], 'company2' => $entities[1]])
+            ->setParameter('company1', $entities[0])
+            ->setParameter('company2', $entities[1])
             ->groupBy('P.id')
             ->orderBy('name')
         ;

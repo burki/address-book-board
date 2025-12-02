@@ -204,7 +204,8 @@ class CompanyController extends AbstractController
                 \Doctrine\ORM\Query\Expr\Join::WITH,
                 'PC2.company = C AND PC2.person = :person2'
             )
-            ->setParameters(['person1' => $entities[0], 'person2' => $entities[1]])
+            ->setParameter('person1', $entities[0])
+            ->setParameter('person2', $entities[1])
             ->groupBy('C.id')
             ->orderBy('name')
         ;
