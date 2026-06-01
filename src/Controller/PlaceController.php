@@ -143,7 +143,9 @@ class PlaceController extends AbstractController
         $companies,
         EntityManagerInterface $em
     ) {
-        $companyIds = array_map(function ($company) { return $company->getId(); }, $companies);
+        $companyIds = array_map(function ($company) {
+            return $company->getId();
+        }, $companies);
         $qb = $em
             ->getRepository(Person::class)
             ->createQueryBuilder('p')
@@ -184,7 +186,9 @@ class PlaceController extends AbstractController
             'info' => $res['infoByYear'],
             'companies' => $companies,
             'persons' => $this->buildPersonsForCompanies(
-                array_map(function ($row) { return $row[0]; }, $companies),
+                array_map(function ($row) {
+                    return $row[0];
+                }, $companies),
                 $em
             ),
         ]);
